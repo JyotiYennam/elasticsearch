@@ -17,17 +17,20 @@ RUN \
   rm -f $ES_PKG_NAME.tar.gz && \
   mv /$ES_PKG_NAME /elasticsearch
 
-# Define mountable directories.
-VOLUME ["/data"]
+ENV cluster.name="docker-cluster"
+ENV bootstrap.memory_lock=true
+ENV ES_JAVA_OPTS="-Xms512m -Xmx512m"
+ENV xpack.security.enabled=false
+ENV xpack.monitoring.enabled=false
+ENV xpack.graph.enabled=false
+ENV xpack.watcher.enabled=false
+ENV discovery.type="single-node"
+ENV http.port=9200
+ENV transport.tcp.port: 9300
+ENV network.host=0.0.0.0
+ENV http.host=0.0.0.0
 
-# Mount elasticsearch.yml config
-ADD config/elasticsearch.yml /elasticsearch/config/elasticsearch.yml
-
-# Define working directory.
-WORKDIR /data
-
-# Define default command.
-CMD ["/elasticsearch/bin/elasticsearch"]
+COPY --chown=elasticsearch:elasticsearch config/elasticsearch.yml /usr/share/elasticsearch/config/
 
 # Expose ports.
 #   - 9200: HTTP
